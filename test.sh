@@ -3,3 +3,5 @@
 uname -a
 
 env
+
+clang -v
