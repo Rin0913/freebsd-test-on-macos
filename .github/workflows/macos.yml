@@ -1,0 +1,11 @@
+name: MacOS Workflow
+on: [push]
+jobs:
+  test-macos:
+    name: test on macos
+    runs-on: macos-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: test
+        run: sh -ex test.sh
