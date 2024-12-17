@@ -1,8 +1,8 @@
-name: MacOS Workflow
+name: macOS Workflow
 on: [push]
 jobs:
   test-macos:
-    name: test on macos
+    name: test on macOS
     runs-on: macos-latest
     steps:
       - name: checkout
