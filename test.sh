@@ -6,5 +6,7 @@ env
 
 clang -v
 
+SRCTOP=${PWD}
 cd bin/cat
-bmake
+
+bmake -m ${SRCTOP}/mk
