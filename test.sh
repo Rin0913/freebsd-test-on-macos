@@ -7,4 +7,4 @@ env
 clang -v
 
 cd bin/cat
-make
+bmake

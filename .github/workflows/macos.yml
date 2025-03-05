@@ -7,5 +7,7 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+      - name: install bmake
+        run: brew install bmake
       - name: test
         run: sh -ex test.sh
