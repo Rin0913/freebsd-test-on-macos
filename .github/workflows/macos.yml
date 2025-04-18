@@ -8,8 +8,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: install bmake
-        run: brew install bmake binutils
-      - name: link gobjcopy
-        run: brew link binutils --force
+        run: brew install bmake llvm
+      - name: link llvm-objcopy
+        run: brew link llvm --force
       - name: test
         run: sh -ex test.sh
+      - name: simple test
+        run: outputs/cat/cat /etc/hosts

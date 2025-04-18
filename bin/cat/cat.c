@@ -443,7 +443,7 @@ udom_open(const char *path, int flags)
 	struct addrinfo hints, *res, *res0;
 	char rpath[PATH_MAX];
 	int error, fd, serrno;
-	cap_rights_t rights;
+	// cap_rights_t rights;
 
 	/*
 	 * Construct the unix domain socket address and attempt to connect.
@@ -454,14 +454,14 @@ udom_open(const char *path, int flags)
 	if (fileargs_realpath(fa, path, rpath) == NULL)
 		return (-1);
 
-	error = cap_getaddrinfo(capnet, rpath, NULL, &hints, &res0);
-	if (error) {
-		warn("%s", gai_strerror(error));
-		errno = EINVAL;
-		return (-1);
-	}
-	cap_rights_init(&rights, CAP_CONNECT, CAP_READ, CAP_WRITE,
-	    CAP_SHUTDOWN, CAP_FSTAT, CAP_FCNTL);
+	// error = cap_getaddrinfo(capnet, rpath, NULL, &hints, &res0);
+	// if (error) {
+	// 	warn("%s", gai_strerror(error));
+	// 	errno = EINVAL;
+	// 	return (-1);
+	// }
+	// cap_rights_init(&rights, CAP_CONNECT, CAP_READ, CAP_WRITE,
+	//     CAP_SHUTDOWN, CAP_FSTAT, CAP_FCNTL);
 
 	/* Default error if something goes wrong. */
 	serrno = EINVAL;
@@ -501,28 +501,28 @@ udom_open(const char *path, int flags)
 	 * handle the open flags by shutting down appropriate directions
 	 */
 
-	switch (flags & O_ACCMODE) {
-	case O_RDONLY:
-		cap_rights_clear(&rights, CAP_WRITE);
-		if (shutdown(fd, SHUT_WR) != 0)
-			warn(NULL);
-		break;
-	case O_WRONLY:
-		cap_rights_clear(&rights, CAP_READ);
-		if (shutdown(fd, SHUT_RD) != 0)
-			warn(NULL);
-		break;
-	default:
-		break;
-	}
+	// switch (flags & O_ACCMODE) {
+	// case O_RDONLY:
+	// 	cap_rights_clear(&rights, CAP_WRITE);
+	// 	if (shutdown(fd, SHUT_WR) != 0)
+	// 		warn(NULL);
+	// 	break;
+	// case O_WRONLY:
+	// 	cap_rights_clear(&rights, CAP_READ);
+	// 	if (shutdown(fd, SHUT_RD) != 0)
+	// 		warn(NULL);
+	// 	break;
+	// default:
+	// 	break;
+	// }
 
-	cap_rights_clear(&rights, CAP_CONNECT, CAP_SHUTDOWN);
-	if (caph_rights_limit(fd, &rights) != 0) {
-		serrno = errno;
-		close(fd);
-		errno = serrno;
-		return (-1);
-	}
+	// cap_rights_clear(&rights, CAP_CONNECT, CAP_SHUTDOWN);
+	// if (caph_rights_limit(fd, &rights) != 0) {
+		// serrno = errno;
+		// close(fd);
+		// errno = serrno;
+		// return (-1);
+	// }
 	return (fd);
 }
 
