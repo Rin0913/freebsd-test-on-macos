@@ -40,7 +40,7 @@ WARNS=	${DEFAULTWARNS}
 .if ${WARNS} >= 1
 CWARNFLAGS+=	-Wsystem-headers
 .if ${MK_WERROR} != "no" && ${MK_WERROR.${COMPILER_TYPE}:Uyes} != "no"
-CWARNFLAGS+=	-Werror
+CWARNFLAGS+=	-Werror -Wno-nullability-completeness -Wno-expansion-to-defined
 .endif # ${MK_WERROR} != "no" && ${MK_WERROR.${COMPILER_TYPE}:Uyes} != "no"
 .endif # WARNS >= 1
 .if ${WARNS} >= 2
@@ -152,7 +152,7 @@ CWARNFLAGS+=	-Wformat=2 -Wno-format-extra-args
 CWARNFLAGS.clang+=	-Wno-format-nonliteral
 .endif # WARNS <= 3
 .if ${MK_WERROR} != "no" && ${MK_WERROR.${COMPILER_TYPE}:Uyes} != "no"
-CWARNFLAGS+=	-Werror
+CWARNFLAGS+=	-Werror -Wno-nullability-completeness -Wno-expansion-to-defined
 .endif # ${MK_WERROR} != "no" && ${MK_WERROR.${COMPILER_TYPE}:Uyes} != "no"
 .endif # WFORMAT > 0
 .endif # WFORMAT

@@ -1,12 +1,15 @@
 #!/bin/sh
 
+set -e
+
 uname -a
-
 env
-
 clang -v
 
-SRCTOP=${PWD}
-cd bin/cat
 
-bmake -m ${SRCTOP}/mk
+SRCTOP=$(pwd)
+
+cd bin/cat
+bmake -m "$SRCTOP/mk" \
+      SRCTOP="$SRCTOP" \
+      MAKEOBJDIRPREFIX="$SRCTOP/obj"

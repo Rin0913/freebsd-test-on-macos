@@ -32,16 +32,19 @@
  * SUCH DAMAGE.
  */
 
-#include <sys/capsicum.h>
+#define NO_UDOM_SUPPORT 1
+// #include <sys/capsicum.h>
 #include <sys/param.h>
 #include <sys/stat.h>
+#include <copyfile.h>
+
 #ifndef NO_UDOM_SUPPORT
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <netdb.h>
 #endif
 
-#include <capsicum_helpers.h>
+// #include <capsicum_helpers.h>
 #include <ctype.h>
 #include <err.h>
 #include <errno.h>
@@ -54,14 +57,14 @@
 #include <wchar.h>
 #include <wctype.h>
 
-#include <libcasper.h>
-#include <casper/cap_fileargs.h>
-#include <casper/cap_net.h>
+// #include <libcasper.h>
+// #include <casper/cap_fileargs.h>
+// #include <casper/cap_net.h>
 
 static int bflag, eflag, lflag, nflag, sflag, tflag, vflag;
 static int rval;
 static const char *filename;
-static fileargs_t *fa;
+// static fileargs_t *fa;
 
 static void usage(void) __dead2;
 static void scanfiles(char *argv[], int cooked);
@@ -72,7 +75,7 @@ static ssize_t in_kernel_copy(int);
 static void raw_cat(int);
 
 #ifndef NO_UDOM_SUPPORT
-static cap_channel_t *capnet;
+// static cap_channel_t *capnet;
 
 static int udom_open(const char *path, int flags);
 #endif
@@ -130,28 +133,28 @@ init_casper_net(cap_channel_t *casper)
 }
 #endif
 
-static void
-init_casper(int argc, char *argv[])
-{
-	cap_channel_t *casper;
-	cap_rights_t rights;
+// static void
+// init_casper(int argc, char *argv[])
+// {
+// 	cap_channel_t *casper;
+// 	cap_rights_t rights;
 
-	casper = cap_init();
-	if (casper == NULL)
-		err(EXIT_FAILURE, "unable to create Casper");
+// 	casper = cap_init();
+// 	if (casper == NULL)
+// 		err(EXIT_FAILURE, "unable to create Casper");
 
-	fa = fileargs_cinit(casper, argc, argv, O_RDONLY, 0,
-	    cap_rights_init(&rights, CAP_READ, CAP_FSTAT, CAP_FCNTL, CAP_SEEK),
-	    FA_OPEN | FA_REALPATH);
-	if (fa == NULL)
-		err(EXIT_FAILURE, "unable to create fileargs");
+// 	fa = fileargs_cinit(casper, argc, argv, O_RDONLY, 0,
+// 	    cap_rights_init(&rights, CAP_READ, CAP_FSTAT, CAP_FCNTL, CAP_SEEK),
+// 	    FA_OPEN | FA_REALPATH);
+// 	if (fa == NULL)
+// 		err(EXIT_FAILURE, "unable to create fileargs");
 
-#ifndef NO_UDOM_SUPPORT
-	init_casper_net(casper);
-#endif
+// #ifndef NO_UDOM_SUPPORT
+// 	init_casper_net(casper);
+// #endif
 
-	cap_close(casper);
-}
+// 	cap_close(casper);
+// }
 
 int
 main(int argc, char *argv[])
@@ -202,12 +205,12 @@ main(int argc, char *argv[])
 			err(EXIT_FAILURE, "stdout");
 	}
 
-	init_casper(argc, argv);
+	// init_casper(argc, argv);
 
-	caph_cache_catpages();
+	// caph_cache_catpages();
 
-	if (caph_enter_casper() != 0)
-		err(EXIT_FAILURE, "capsicum");
+	// if (caph_enter_casper() != 0)
+	// 	err(EXIT_FAILURE, "capsicum");
 
 	if (bflag || eflag || nflag || sflag || tflag || vflag)
 		scanfiles(argv, 1);
@@ -245,7 +248,7 @@ scanfiles(char *argv[], int cooked __unused)
 			fd = STDIN_FILENO;
 		} else {
 			filename = path;
-			fd = fileargs_open(fa, path);
+			fd = open(path, O_RDONLY);
 #ifndef NO_UDOM_SUPPORT
 			if (fd < 0 && errno == EOPNOTSUPP)
 				fd = udom_open(path, O_RDONLY);
@@ -338,7 +341,7 @@ cook_cat(FILE *fp)
 				if (ferror(fp) && errno == EILSEQ) {
 					clearerr(fp);
 					/* Resync attempt. */
-					memset(&fp->_mbstate, 0, sizeof(mbstate_t));
+					// memset(&fp->_mbstate, 0, sizeof(mbstate_t));
 					if ((ch = getc(fp)) == EOF)
 						break;
 					wch = ch;
@@ -386,7 +389,8 @@ in_kernel_copy(int rfd)
 	ret = 1;
 
 	while (ret > 0)
-		ret = copy_file_range(rfd, NULL, wfd, NULL, SSIZE_MAX, 0);
+		// ret = copy_file_range(rfd, NULL, wfd, NULL, SSIZE_MAX, 0);
+        ret = fcopyfile(rfd, wfd, NULL, COPYFILE_CLONE | COPYFILE_ALL);
 
 	return (ret);
 }
