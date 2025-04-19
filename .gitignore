@@ -7,3 +7,4 @@ outputs
 *.rej
 *.so
 *.sw[nop]
+.DS_Store

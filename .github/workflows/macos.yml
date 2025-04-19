@@ -12,7 +12,7 @@ jobs:
       - name: link llvm-objcopy
         run: brew link llvm --force
       - name: test
-        run: sh -ex test.sh
+        run: sudo sh -ex test.sh
       - name: simple test
         run: outputs/cat/cat /etc/hosts
       - name: install port and kyua
@@ -28,6 +28,11 @@ jobs:
           sudo /opt/local/bin/port install kyua
       - name: kyua test
         run: |
-          cd outputs/cat/tests
-          sed -i '' 's|/usr/libexec/atf-sh|/opt/homebrew/bin/atf-sh|g' cat_test
-          /opt/local/bin/kyua test
+          cd outputs/cat
+          sudo sed -i '' '/\/usr\/libexec\/atf-sh/{
+            s|/usr/libexec/atf-sh|/opt/homebrew/bin/atf-sh|
+            a\
+          script_dir=$(cd -- "$(dirname -- "$0")" && pwd)\
+          PATH="${script_dir}:$PATH"
+          }' cat_test
+          sudo /opt/local/bin/kyua test
