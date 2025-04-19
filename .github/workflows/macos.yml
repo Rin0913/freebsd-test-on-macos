@@ -7,15 +7,15 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-      - name: install bmake
-        run: brew install bmake llvm
+      - name: install bmake, llvm, and atf
+        run: brew install bmake llvm atf
       - name: link llvm-objcopy
         run: brew link llvm --force
       - name: test
         run: sh -ex test.sh
       - name: simple test
         run: outputs/cat/cat /etc/hosts
-      - name: install port
+      - name: install port and kyua
         run: |
           xcode-select --install || true
           git clone https://github.com/macports/macports-base.git
@@ -23,5 +23,11 @@ jobs:
           ./configure --prefix=/opt/local
           make -j$(sysctl -n hw.ncpu)
           sudo make install
-          sudo port -v selfupdate
+          sudo /opt/local/bin/port -v selfupdate
           cd ../
+          sudo /opt/local/bin/port install kyua
+      - name: kyua test
+        run: |
+          cd outputs/cat/tests
+          sed -i '' 's|/usr/libexec/atf-sh|/opt/homebrew/bin/atf-sh|g' cat_test
+          /opt/local/bin/kyua test
